@@ -8,38 +8,17 @@ const CreateAccount = () => {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Basic validation
-    if (!name || !email || !password || !mobile_number) {
-      setError("All fields are required");
-      return;
-    }
-
-    // Mobile number validation
-    if (mobile_number.length !== 10 || isNaN(mobile_number)) {
-      setError("Mobile number should be 10 digits");
-      return;
-    }
-
-    // Password strength validation
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    if (!passwordRegex.test(password)) {
-      setError("Password should contain at least one lowercase letter, one uppercase letter, one number, one special character, and be at least 8 characters long");
-      return;
-    }
-
-    // Email format validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setError("Email is not in correct format");
-      return;
-    }
-
+    // Clear any previous error messages
     setError("");
+    setSuccessMessage("");
 
+    // Basic validation...
+    
     try {
       const response = await axios.post('http://localhost:3004/create-account', {
         name,
@@ -47,10 +26,19 @@ const CreateAccount = () => {
         password,
         mobile_number
       });
-      console.log(response.data);
+
+      // Check response for success or error message
+      if (response.data.message) {
+        setSuccessMessage(response.data.message);
+      }
     } catch(error) {
       console.error("Error:", error);
-      // Handle error
+      // Check for specific error messages
+      if (error.response && error.response.data && error.response.data.error) {
+        setError(error.response.data.error);
+      } else {
+        setError("An error occurred. Please try again later.");
+      }
     }
   };
 
@@ -59,6 +47,7 @@ const CreateAccount = () => {
       <h2 id="head">Sign Up</h2>
       <form id="form" onSubmit={handleSubmit}>
         {error && <div className="error">{error}</div>}
+        {successMessage && <div className="success">{successMessage}</div>}
         <div>
           <label htmlFor="name">Name:</label>
           <input

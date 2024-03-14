@@ -37,16 +37,34 @@ app.post("/create-account", (req, res) => {
 
   // Additional validation logic (e.g., password strength, email format) can be added here
 
+  // Check if the email already exists in the database
   db.query(
-    "INSERT INTO register (email, password, name, mobile_number) VALUES (?, ?, ?, ?)",
-    [email, password, name, mobile_number],
+    "SELECT * FROM register WHERE email = ?",
+    [email],
     (error, result) => {
       if (error) {
-        console.error("Error inserting data:", error);
+        console.error("Error checking email:", error);
         return res.status(500).json({ error: "Internal server error" });
       }
-      console.log("Data inserted successfully!");
-      res.status(200).json({ message: "User registered successfully!" });
+
+      // If email already exists, send an error response
+      if (result.length > 0) {
+        return res.status(400).json({ error: "Email already exists" });
+      }
+
+      // Insert new user data into the database
+      db.query(
+        "INSERT INTO register (email, password, name, mobile_number) VALUES (?, ?, ?, ?)",
+        [email, password, name, mobile_number],
+        (error, result) => {
+          if (error) {
+            console.error("Error inserting data:", error);
+            return res.status(500).json({ error: "Internal server error" });
+          }
+          console.log("Data inserted successfully!");
+          res.status(200).json({ message: "User registered successfully!" });
+        }
+      );
     }
   );
 });

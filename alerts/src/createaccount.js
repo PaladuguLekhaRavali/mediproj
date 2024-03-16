@@ -4,7 +4,7 @@ import axios from 'axios';
 
 const CreateAccount = () => {
   const [name, setName] = useState("");
-  const [mobile_number, setMobileNumber] = useState("");
+  const [mobileNumber, setMobileNumber] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
@@ -18,22 +18,48 @@ const CreateAccount = () => {
     setSuccessMessage("");
 
     // Basic validation...
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long");
+      return;
+    }
+    if (!/[A-Z]/.test(password)) {
+      setError("Password must contain at least one uppercase letter");
+      return;
+    }
+    if (!/[a-z]/.test(password)) {
+      setError("Password must contain at least one lowercase letter");
+      return;
+    }
+    if (!/\d/.test(password)) {
+      setError("Password must contain at least one digit");
+      return;
+    }
+    if (!/[^A-Za-z0-9]/.test(password)) {
+      setError("Password must contain at least one special character");
+      return;
+    }
+    if (mobileNumber.length !== 10) {
+      setError("Mobile number must be 10 digits long");
+      return;
+    }
+    if (!/^[\w-]+(?:\.[\w-]+)*@(?:[\w-]+\.)+[a-zA-Z]{2,7}$/.test(email)) {
+      setError("Invalid email format");
+      return;
+    }
     
     try {
       const response = await axios.post('http://localhost:3004/create-account', {
         name,
         email,
         password,
-        mobile_number
+        mobile_number: mobileNumber
       });
 
-      // Check response for success or error message
       if (response.data.message) {
         setSuccessMessage(response.data.message);
       }
     } catch(error) {
       console.error("Error:", error);
-      // Check for specific error messages
       if (error.response && error.response.data && error.response.data.error) {
         setError(error.response.data.error);
       } else {
@@ -57,7 +83,7 @@ const CreateAccount = () => {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Enter your name"
-            required
+            //required  please fill this field dialogue
           />
         </div>
         <br />
@@ -70,7 +96,7 @@ const CreateAccount = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Enter your email"
-            required
+           
           />
         </div>
         <br />
@@ -83,7 +109,7 @@ const CreateAccount = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Enter your password"
-            required
+         
           />
         </div>
         <br />
@@ -93,10 +119,10 @@ const CreateAccount = () => {
             type="tel"
             id="mobile_number"
             name="mobile_number"
-            value={mobile_number}
+            value={mobileNumber}
             onChange={(e) => setMobileNumber(e.target.value)}
             placeholder="Enter your 10-digit mobile number"
-            required
+           
           />
         </div>
         <button type="submit">Sign Up</button>

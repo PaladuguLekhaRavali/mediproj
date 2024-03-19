@@ -1,0 +1,45 @@
+body {
+    margin: 0;
+    padding: 0;
+    /* background-image: url("./medicine.jpg");
+    background-size: cover;
+    background-repeat: no-repeat; */
+  }
+  
+  #container {
+    background: linear-gradient(to bottom, #6196cf 0%, #6aabf1 50%, #ffffff 100%);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 500px;
+    height: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 150px;
+    padding: 20px;
+  }
+  
+  #head {
+    text-align: center; 
+  }
+  
+  #form {
+    margin-top: 20px; 
+  }
+  
+  #form div {
+    margin-bottom: 15px; 
+  }
+  
+  label {
+    display: block; 
+    margin-bottom: 5px; 
+  }
+  
+  input {
+    width: 100%; 
+    padding: 5px;
+  }
+  .error{
+    color: rgb(128, 46, 10);
+    text-shadow: black;
+    font-size: large;
+  }

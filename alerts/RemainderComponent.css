@@ -1,0 +1,38 @@
+/* RemainderComponent.css */
+
+.component {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .options {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .option {
+    background-color: #f0f0f0;
+    padding: 10px 20px;
+    margin: 0 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .option:hover {
+    background-color: #e0e0e0;
+  }
+  
+  .option span {
+    font-size: 18px;
+  }
+  
+  .option:hover span {
+    font-weight: bold;
+  }
+  

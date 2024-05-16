@@ -1,18 +1,23 @@
 import React from 'react';
 import './dashboars.css'; // Import the CSS file
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
 const Dashboard = () => {
+  const navigate = useNavigate();
+
+  const handleLoginClick = () => {
+    navigate('/login');
+  };
+
+  const handleSignUpClick = () => {
+    navigate('/create-account');
+  };
+
   return (
     <div className="dashboard-container">
       <h1 className="dashboard-title">Welcome to the Dashboard</h1>
-      <Link to="/login"><button className="dashboard-button">Login</button> 
-      
-      </Link>
-      <Link to="/createaccount">
-       
-     
-      <button className="dashboard-button">Sign Up</button>
-      </Link>
+      <button className="dashboard-button" onClick={handleLoginClick}>Login</button>
+      <button className="dashboard-button" onClick={handleSignUpClick}>Sign Up</button>
     </div>
   );
 };

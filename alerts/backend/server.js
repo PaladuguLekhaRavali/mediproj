@@ -1,75 +1,179 @@
-const express = require("express");
-const mysql = require("mysql");
-const cors = require("cors"); // Import the cors middleware
 
-const app = express();
-app.use(express.json());
-app.use(cors()); // Enable CORS for all routes
+ const express = require('express');
+ const bodyParser = require('body-parser');
+ const cors = require('cors');
+ const nodemailer = require('nodemailer');
+ const mysql = require('mysql');
 
-const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "Lekha.123",
-  database: "mediproj",
-});
+ const app = express();
+ app.use(cors());
+ app.use(bodyParser.json());
+ app.use(bodyParser.urlencoded({ extended: true }));
+ const activeOTPs = {};
 
-db.connect((err) => {
-  if (err) {
-    console.error("Error connecting to the database:", err);
-    return;
-  }
-  console.log("Connected to the database!");
-});
+ // Database connection configuration
+ const db = mysql.createConnection({
+   host: "localhost",
+   user: "root",
+   password: "Lekha.123",
+   database: "mediproj",
+ });
 
-// Define GET handler for the root URL
-app.get("/", (req, res) => {
-  res.send("Welcome to the application!");
-});
+ // Connect to the database
+ db.connect((err) => {
+   if (err) {
+     console.error("Error connecting to the database:", err);
+     return;
+   }
+   console.log("Connected to the database!");
+ });
 
-// Define POST handler for creating an account
-app.post("/create-account", (req, res) => {
-  const { name, password, email, mobile_number } = req.body;
+ // Nodemailer transporter configuration
+ const transporter = nodemailer.createTransport({
+   host: 'smtp.gmail.com',
+   port: 587,
+   secure: false,
+   auth: {
+     user: 'lekharavalipaladugu1234@gmail.com',
+     pass: 'xvnvzbtmuomkprqx',
+   },
+ });
 
-  // Basic input validation
-  if (!name || !password || !email || !mobile_number) {
+ // Function to generate OTP
+ const generateOTP = () => {
+   return Math.floor(100000 + Math.random() * 900000);
+ };
+
+ // Endpoint to send OTP via email
+ app.post('/send-otp', async (req, res) => {
+   const { email } = req.body;
+
+   if (!email) {
+     return res.status(400).json({ error: 'Email is required in the request body' });
+   }
+
+   const otp = generateOTP();
+   const mailOptions = {
+     from: 'lekharavalipaladugu1234@gmail.com',
+     to: email,
+     subject: 'OTP Verification',
+     text: `Your OTP for email verification is: ${otp}`,
+   };
+
+   try {
+     await transporter.sendMail(mailOptions);
+     console.log('OTP sent successfully:', otp);
+
+     activeOTPs[email] = otp.toString();
+
+     res.status(200).json({ success: true, message: 'OTP sent successfully' });
+   } catch (error) {
+     console.error('Error sending email:', error);
+     res.status(500).json({ error: 'Failed to send OTP' });
+   }
+ });
+
+ // Endpoint to verify OTP
+ app.post('/verify-otp', (req, res) => {
+   const { email, otp } = req.body;
+ console.log(email)
+ console.log(otp)
+   if (!email || !otp) {
+     return res.status(400).json({ error: 'Email and OTP are required' });
+   }
+ console.log(activeOTPs)
+ 
+ 
+   const storedOTP = activeOTPs[email].trim();
+   const submittedOTP = otp.toString().trim();
+   if (!storedOTP || storedOTP !== submittedOTP) {
+   console.log("Invalid otp")
+     return res.status(400).json({ error: 'Invalid OTP. Please enter the correct OTP' });
+   }
+   console.log("otpverification success")
+
+   delete activeOTPs[email]; // Clear the OTP from activeOTPs after successful verification
+
+   res.status(200).json({ success: true, message: 'OTP verification successful' });
+ });
+
+   
+app.post('/save-user', (req, res) => {
+  const { email, name, password, mobileNumber } = req.body;
+
+  if (!name || !email || !password || !mobileNumber) {
     return res.status(400).json({ error: "All fields are required" });
   }
 
-  // Additional validation logic (e.g., password strength, email format) can be added here
-
-  // Check if the email already exists in the database
-  db.query(
-    "SELECT * FROM register WHERE email = ?",
-    [email],
-    (error, result) => {
-      if (error) {
-        console.error("Error checking email:", error);
-        return res.status(500).json({ error: "Internal server error" });
-      }
-
-      // If email already exists, send an error response
-      if (result.length > 0) {
-        return res.status(400).json({ error: "Email already exists" });
-      }
-
-      // Insert new user data into the database
-      db.query(
-        "INSERT INTO register (email, password, name, mobile_number) VALUES (?, ?, ?, ?)",
-        [email, password, name, mobile_number],
-        (error, result) => {
-          if (error) {
-            console.error("Error inserting data:", error);
-            return res.status(500).json({ error: "Internal server error" });
-          }
-          console.log("Data inserted successfully!");
-          res.status(200).json({ message: "User registered successfully!" });
-        }
-      );
+  // Check if the user with the same email or name already exists
+  db.query('SELECT * FROM register WHERE email = ? OR name = ?', [email, name], (error, results) => {
+    if (error) {
+      console.error("Error checking email or name:", error);
+      return res.status(500).json({ error: "Internal server error" });
     }
-  );
+
+    if (results.length > 0) {
+      const existingUser = results.find(user => user.email === email);
+      if (existingUser) {
+        return res.status(400).json({ error: "Email already exists" });
+      } else {
+        return res.status(400).json({ error: "Name already exists" });
+      }
+    }
+
+    // Insert new user into the register table
+    db.query(
+      'INSERT INTO register (email, password, name, mobile_number) VALUES (?, ?, ?, ?)',
+      [email, password, name, mobileNumber],
+      (error, result) => {
+        if (error) {
+          console.error("Error inserting user data:", error);
+          return res.status(500).json({ error: "Internal server error" });
+        }
+
+        console.log("User data inserted successfully:", result);
+        res.status(200).json({ success: true, message: "User registered successfully" });
+      }
+    );
+  });
 });
 
-// Start the server and listen on port 3004
-app.listen(3004, () => {
-  console.log("Server listening on port 3004");
-});
+ app.post('/login', (req, res) => {
+   const { email, password } = req.body;
+
+   if (!email || !password) {
+     return res.status(400).json({ error: "Email and password are required" });
+   }
+
+   // Query the database to check if the user exists with the provided email and password
+   db.query('SELECT * FROM register WHERE email = ? AND password = ?', [email, password], (error, results) => {
+     if (error) {
+       console.error("Error checking login credentials:", error);
+       return res.status(500).json({ error: "Internal server error" });
+     }
+
+     if (results.length === 0) {
+       return res.status(401).json({ error: "Invalid email or password" });
+     }
+
+     // User found, login successful
+     res.status(200).json({ success: true, message: "Login successful" });
+   });
+ });
+
+
+
+
+
+
+
+
+
+
+ // Start the server
+ const PORT = 3004;
+ app.listen(PORT, () => {
+   console.log(`Server listening on port ${PORT}`);
+ });
+
+

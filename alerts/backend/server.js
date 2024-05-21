@@ -190,6 +190,58 @@ app.post('/save-user', (req, res) => {
     }
   });
 });
+app.get('/requestsfe', (req, res) => {
+  const { receiver_name } = req.query;
+
+  db.query('SELECT sender_name FROM requests WHERE receiver_name = ?', [receiver_name], (err, rows) => {
+    if (err) {
+      console.error('Error fetching requests:', err);
+      res.status(500).json({ success: false, message: 'Internal server error.' });
+      return;
+    }
+
+    res.status(200).json({ success: true, requests: rows });
+  });
+});
+
+// Accept request
+app.post('/requestsfe/accept', (req, res) => {
+  const { sender_name, receiver_name } = req.body;
+
+  db.query('DELETE FROM requests WHERE sender_name = ? AND receiver_name = ?', [sender_name, receiver_name], (err) => {
+    if (err) {
+      console.error('Error deleting request:', err);
+      res.status(500).json({ success: false, message: 'Internal server error.' });
+      return;
+    }
+
+    db.query('INSERT INTO friends (user1, user2) VALUES (?, ?)', [sender_name, receiver_name], (err) => {
+      if (err) {
+        console.error('Error inserting into friends:', err);
+        res.status(500).json({ success: false, message: 'Internal server error.' });
+        return;
+      }
+
+      res.status(200).json({ success: true, message: 'Request accepted successfully!' });
+    });
+  });
+});
+
+// Reject request
+app.post('/requestsfe/reject', (req, res) => {
+  const { sender_name, receiver_name } = req.body;
+
+  db.query('UPDATE requests SET status = "rejected" WHERE sender_name = ? AND receiver_name = ?', [sender_name, receiver_name], (err) => {
+    if (err) {
+      console.error('Error rejecting request:', err);
+      res.status(500).json({ success: false, message: 'Internal server error.' });
+      return;
+    }
+
+    res.status(200).json({ success: true, message: 'Request rejected successfully!' });
+  });
+});
+
 
  // Start the server
  const PORT = 3004;

@@ -1,81 +1,45 @@
-// SentRequestComponent.js
-
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 
-const SentRequestComponent = () => {
-  const [formData, setFormData] = useState({
-    receiver_name: '',
-    receiver_mobile: ''
-  });
+const RequestComponent = () => {
+  const [username, setUsername] = useState('');
+  const [alertMessage, setAlertMessage] = useState('');
 
-  const [currentUser, setCurrentUser] = useState(null);
-
-  useEffect(() => {
-    // Fetch current user's information using JWT token
-    const fetchCurrentUser = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get('/api/current-user', { headers: { Authorization: token } });
-        setCurrentUser(response.data.user);
-      } catch (error) {
-        console.error('Error fetching current user:', error);
-      }
-    };
-    fetchCurrentUser();
-  }, []);
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleRequest = async () => {
     try {
-      if (!currentUser) {
-        console.error('Current user is null or undefined');
-        // Handle the error or return early if necessary
-        return;
+      const response = await axios.post('http://localhost:3004/requests', {
+        sender_name: localStorage.getItem('username'),
+        receiver_name: username
+      });
+      if (response.data.success) {
+        setAlertMessage('Request sent successfully!');
+      } else {
+        setAlertMessage(response.data.message); // Set alert message from response
       }
-      // Send request with current user's name and details
-      await axios.post('/api/sent-requests', {
-        sender_name: currentUser.name,
-        receiver_name: formData.receiver_name,
-        receiver_mobile: formData.receiver_mobile,
-        message: formData.message
-      });
-      alert('Request sent successfully!');
-      // Optionally clear the form fields
-      setFormData({
-        receiver_name: '',
-        receiver_mobile: '',
-        message: ''
-      });
     } catch (error) {
       console.error('Error sending request:', error);
-      alert('Error sending request. Please try again later.');
+      if (error.response && error.response.data && error.response.data.message === 'User not found.') {
+        setAlertMessage('User not found. Please enter a valid username.'); // Set specific error message for user not found
+      } else {
+        setAlertMessage('Failed to send request.'); // Default error message
+      }
     }
   };
-  
-   
-   
 
   return (
     <div>
-      <h2>Sent Request</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Receiver Name:</label>
-          <input type="text" name="receiver_name" value={formData.receiver_name} onChange={handleChange} required />
-        </div>
-        <div>
-          <label>Receiver Mobile:</label>
-          <input type="text" name="receiver_mobile" value={formData.receiver_mobile} onChange={handleChange} required />
-        </div>
-        <button type="submit">Send Request</button>
-      </form>
+      <h2>Send Request</h2>
+      <label htmlFor="username">Enter Username:</label>
+      <input
+        type="text"
+        id="username"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+      />
+      <button onClick={handleRequest}>Send Request</button>
+      {alertMessage && <p>{alertMessage}</p>}
     </div>
   );
 };
 
-export default SentRequestComponent;
+export default RequestComponent;

@@ -139,21 +139,21 @@ app.post('/save-user', (req, res) => {
 });
 
  app.post('/login', (req, res) => {
-   const { email, password } = req.body;
+   const { username, password } = req.body;
 
-   if (!email || !password) {
+   if (!username || !password) {
      return res.status(400).json({ error: "Email and password are required" });
    }
 
    // Query the database to check if the user exists with the provided email and password
-   db.query('SELECT * FROM register WHERE email = ? AND password = ?', [email, password], (error, results) => {
+   db.query('SELECT * FROM register WHERE name = ? AND password = ?', [username, password], (error, results) => {
      if (error) {
-       console.error("Error checking login credentials:", error);
+      //  console.error("Error checking login credentials:", error);
        return res.status(500).json({ error: "Internal server error" });
      }
 
      if (results.length === 0) {
-       return res.status(401).json({ error: "Invalid email or password" });
+       return res.status(401).json({ error: "Invalid username or password" });
      }
 
      // User found, login successful
@@ -161,14 +161,35 @@ app.post('/save-user', (req, res) => {
    });
  });
 
+ app.post('/requests', (req, res) => {
+  const { sender_name, receiver_name } = req.body;
+  
+  // Check if the receiver's name exists in the register table
+  db.query('SELECT name FROM register WHERE name = ?', [receiver_name], (err, rows) => {
+    if (err) {
+      // console.error('Error checking user:', err);
+      res.status(500).json({ success: false, message: 'Internal server error.' });
+      return;
+    }
 
-
-
-
-
-
-
-
+    if (rows.length > 0) {
+      // If receiver exists, insert the request details into the requests table
+      db.query('INSERT INTO requests (sender_name, receiver_name) VALUES (?, ?)', [sender_name, receiver_name], (err) => {
+        if (err) {
+          // console.error('Error sending request:', err);
+          res.status(500).json({ success: false, message: 'Failed to send request.' });
+        } else {
+          // console.log('Request sent successfully:', { sender_name, receiver_name });
+          res.status(200).json({ success: true, message: 'Request sent successfully!' });
+        }
+      });
+    } else {
+      // If receiver does not exist, send user not found message
+      // console.log('User not found:', receiver_name);
+      res.status(404).json({ success: false, message: 'User not found.' });
+    }
+  });
+});
 
  // Start the server
  const PORT = 3004;

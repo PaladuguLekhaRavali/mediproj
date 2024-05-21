@@ -12,19 +12,22 @@ const LoginForm = () => {
     event.preventDefault(); // Prevent default form submission behavior
 
     const formData = new FormData(event.target);
-    const email = formData.get('email');
+    const username = formData.get('username');
     const password = formData.get('password');
 
     try {
-      const response = await axios.post('http://localhost:3004/login', { email, password });
+      const response = await axios.post('http://localhost:3004/login', { username, password });
 
       if (response.status === 200) {
+        // Store the username in local storage
+        localStorage.setItem('username', username);
+        
         // Navigate to Remainders page upon successful login
         navigate('/remainder'); // Use navigate to navigate to '/remainders'
       } else {
         // Handle unsuccessful login (e.g., invalid credentials)
         if (response.status === 401) {
-          setError('Invalid email or password'); // Set error message for invalid credentials
+          setError('Invalid username or password'); // Set error message for invalid credentials
         } else {
           // Other server errors
           setError(`Login failed with status ${response.status}. Please try again.`);
@@ -35,11 +38,9 @@ const LoginForm = () => {
       if (error.response && error.response.data && error.response.data.error) {
         // Server responded with a specific error message
         const serverError = error.response.data.error;
-        if (serverError === 'Invalid email or password') {
-          setError('Invalid email or password.');
-        } 
-          
-         else {
+        if (serverError === 'Invalid username or password') {
+          setError('Invalid username or password.');
+        } else {
           setError(`Error from server: ${serverError}`);
         }
       } else {
@@ -54,8 +55,8 @@ const LoginForm = () => {
       <h1>Login</h1>
       <form className="login-form" onSubmit={handleSubmit}>
         <div className="form-group">
-          <label htmlFor="email">Email:</label>
-          <input type="email" id="email" name="email" required />
+          <label htmlFor="email">UserName</label>
+          <input type="text" id="email" name="username" required />
         </div>
         <div className="form-group">
           <label htmlFor="password">Password:</label>

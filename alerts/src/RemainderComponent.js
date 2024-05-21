@@ -10,9 +10,13 @@ const RemainderComponent = () => {
     navigate(route);
   };
 
+  // Retrieve username from local storage
+  const username = localStorage.getItem('username');
+
   return (
     <div className="component">
-     
+      <h2>Welcome, {username}</h2> {/* Display the username */}
+
       <div className="options">
         <div className="option" onClick={() => handleNavigation("/remainderhistory")}>
           <span>Remainders History</span>

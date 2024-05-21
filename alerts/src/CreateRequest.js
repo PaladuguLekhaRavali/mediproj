@@ -39,7 +39,7 @@ const RequestComponent = () => {
       <button onClick={handleRequest}>Send Request</button>
       {alertMessage && <p>{alertMessage}</p>}
     </div>
-  );git add
+  );
 };
 
 export default RequestComponent;

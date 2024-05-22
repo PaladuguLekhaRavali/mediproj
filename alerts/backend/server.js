@@ -4,6 +4,7 @@
  const cors = require('cors');
  const nodemailer = require('nodemailer');
  const mysql = require('mysql');
+ const schedule = require('node-schedule');
 
  const app = express();
  app.use(cors());
@@ -277,6 +278,69 @@ app.delete('/deleterequests', (req, res) => {
     }
 
     res.status(200).json({ success: true, message: 'Request deleted successfully!' });
+  });
+});
+app.get('/friends', (req, res) => {
+  const { username } = req.query;
+
+  db.query('SELECT user1 AS name FROM friends WHERE user2 = ? UNION SELECT user2 AS name FROM friends WHERE user1 = ?', [username, username], (err, rows) => {
+    if (err) {
+      console.error('Error fetching friends:', err);
+      res.status(500).json({ success: false, message: 'Internal server error.' });
+      return;
+    }
+
+    res.status(200).json({ success: true, friends: rows });
+  });
+});
+
+// Create reminder
+app.post('/reminders', (req, res) => {
+  const { sender_name, receiver_name, message, date_time } = req.body;
+
+  // Fetch the receiver's email from the register table
+  db.query('SELECT email FROM register WHERE name = ?', [receiver_name], (err, rows) => {
+    if (err) {
+      console.error('Error fetching receiver email:', err);
+      res.status(500).json({ success: false, message: 'Internal server error.' });
+      return;
+    }
+
+    if (rows.length === 0) {
+      res.status(404).json({ success: false, message: 'Receiver not found.' });
+      return;
+    }
+
+    const receiver_email = rows[0].email;
+
+    db.query('INSERT INTO reminders (sender_name, receiver_name, message, date_time) VALUES (?, ?, ?, ?)', [sender_name, receiver_name, message, date_time], (err, result) => {
+      if (err) {
+        console.error('Error creating reminder:', err);
+        res.status(500).json({ success: false, message: 'Failed to create reminder.' });
+        return;
+      }
+
+      // Schedule the email reminder
+      const reminderDate = new Date(date_time);
+      schedule.scheduleJob(reminderDate, () => {
+        const mailOptions = {
+          from: 'lekharavalipaladugu1234@gmail.com',
+          to: receiver_email,
+          subject: 'Reminder Notification',
+          text: message,
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+          if (error) {
+            console.error('Error sending email:', error);
+          } else {
+            console.log('Reminder email sent:', info.response);
+          }
+        });
+      });
+
+      res.status(200).json({ success: true, message: 'Reminder created successfully!' });
+    });
   });
 });
 

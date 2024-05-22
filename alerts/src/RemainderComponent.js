@@ -24,7 +24,7 @@ const RemainderComponent = () => {
         <div className="option" onClick={() => handleNavigation("/requests")}>
           <span>Requests</span>
         </div>
-        <div className="option" onClick={() => handleNavigation("/createremainder")}>
+        <div className="option" onClick={() => handleNavigation("/createreminder")}>
           <span>Create Remainder</span>
         </div>
         <div className="option" onClick={() => handleNavigation("/create-request")}>

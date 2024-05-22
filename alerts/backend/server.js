@@ -265,6 +265,21 @@ app.get('/request-history/:senderName', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+// Endpoint to delete a request by sender_name and receiver_name
+app.delete('/deleterequests', (req, res) => {
+  const { sender_name, receiver_name } = req.body;
+
+  db.query('DELETE FROM requests WHERE sender_name = ? AND receiver_name = ?', [sender_name, receiver_name], (err) => {
+    if (err) {
+      console.error('Error deleting request:', err);
+      res.status(500).json({ success: false, message: 'Internal server error.' });
+      return;
+    }
+
+    res.status(200).json({ success: true, message: 'Request deleted successfully!' });
+  });
+});
+
 
  // Start the server
  const PORT = 3004;

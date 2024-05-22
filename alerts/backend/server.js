@@ -242,6 +242,29 @@ app.post('/requestsfe/reject', (req, res) => {
   });
 });
 
+const getRequestHistoryForSender = async (senderName) => {
+  return new Promise((resolve, reject) => {
+    db.query('SELECT receiver_name, status FROM requests WHERE sender_name = ?', [senderName], (error, results) => {
+      if (error) {
+        console.error('Error fetching request history:', error);
+        reject(error);
+      } else {
+        resolve(results);
+      }
+    });
+  });
+};
+
+app.get('/request-history/:senderName', async (req, res) => {
+  const senderName = req.params.senderName;
+  try {
+    // Fetch the request history from the database
+    const requests = await getRequestHistoryForSender(senderName);
+    res.json({ requests });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
  // Start the server
  const PORT = 3004;

@@ -52,6 +52,7 @@ import Dashboard from './dashborad'
 import CreateAccount from './createaccount'
 import Login from './login'
 import VerifyOTP from './verifyotp.js';
+import DateRemainder from './expiry';
 
 const App = () => {
   return (
@@ -65,7 +66,8 @@ const App = () => {
           <Route path="/verify-otp" element={<VerifyOTP />} />
        
           <Route path="/login" element={<Login/>} />
-
+          <Route path="/expiryde" element={<DateRemainder />} />
+  
           <Route path="/create-request" element={<CreateRequest />} />
           <Route path="/requests" element={<RequestsToUs />} />
           <Route

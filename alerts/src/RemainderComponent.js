@@ -30,6 +30,9 @@ const RemainderComponent = () => {
         <div className="option" onClick={() => handleNavigation("/create-request")}>
           <span>Sent Requests</span>
         </div>
+        <div className="option" onClick={() => handleNavigation("/expiryde")}>
+          <span>Expiry remainder</span>
+        </div>
       </div>
     </div>
   );

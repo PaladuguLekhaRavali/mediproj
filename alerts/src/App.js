@@ -39,7 +39,7 @@
 // App component
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import Navbar from './navbar';
+
 
 
 import CreateRequest from './CreateRequest';
@@ -63,7 +63,7 @@ const App = () => {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/create-account" element={<CreateAccount />} />
           <Route path="/verify-otp" element={<VerifyOTP />} />
-          <Route path="/navbar" element={<Navbar />} />
+       
           <Route path="/login" element={<Login/>} />
 
           <Route path="/create-request" element={<CreateRequest />} />

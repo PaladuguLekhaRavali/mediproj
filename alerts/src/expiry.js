@@ -3,6 +3,7 @@ import axios from 'axios';
 
 const ExpiryAlerts = () => {
   const [expiryDate, setExpiryDate] = useState('');
+  const [itemName, setItemName] = useState('');
   const [alerts, setAlerts] = useState([]);
   const [alertMessage, setAlertMessage] = useState('');
 
@@ -14,7 +15,11 @@ const ExpiryAlerts = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:3004/expiry-alerts', { username, expiry_date: expiryDate });
+      const response = await axios.post('http://localhost:3004/expiry-alerts', {
+        username,
+        expiry_date: expiryDate,
+        item_name: itemName
+      });
       if (response.data.success) {
         setAlertMessage('Expiry alert added successfully');
         fetchAlerts();
@@ -46,6 +51,13 @@ const ExpiryAlerts = () => {
   return (
     <div>
       <h2>Expiry Alerts</h2>
+      <label htmlFor="itemName">Enter Item Name:</label>
+      <input
+        type="text"
+        id="itemName"
+        value={itemName}
+        onChange={(e) => setItemName(e.target.value)}
+      />
       <label htmlFor="expiryDate">Enter Expiry Date:</label>
       <input
         type="date"
@@ -60,16 +72,14 @@ const ExpiryAlerts = () => {
       <table>
         <thead>
           <tr>
-            <th>Username</th>
-            <th>Expiry Date</th>
+            <th>Item Name</th>
             <th>Days Left</th>
           </tr>
         </thead>
         <tbody>
           {alerts.map((alert, index) => (
             <tr key={index}>
-              <td>{alert.username}</td>
-              <td>{alert.expiry_date}</td>
+              <td>{alert.item_name}</td>
               <td>{alert.days_left}</td>
             </tr>
           ))}

@@ -36,7 +36,7 @@ const transporter = nodemailer.createTransport({
   secure: false,
   auth: {
     user: 'lekharavalipaladugu1234@gmail.com',
-    pass: 'xvnvzbtmuomkprqx',
+    pass: 'nryuoovyhfyskort',
   },
 });
 
@@ -371,12 +371,66 @@ app.get('/reminders', (req, res) => {
   });
 });
 
+const sendReminderEmail = (email, username, itemName, daysLeft) => {
+  const mailOptions = {
+    from: 'lekharavalipaladugu1234@gmail.com',
+    to: email,
+    subject: 'Expiry Alert Reminder',
+    text: `Hello ${username},\n\nYour ${itemName} is set to expire in ${daysLeft} days.\n\nBest regards,\nExpiry Alerts Team`,
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error('Error sending reminder email:', error);
+    } else {
+      console.log('Reminder email sent:', info.response);
+    }
+  });
+};
+
+// Function to check expiry alerts and send reminder emails
+const checkExpiryAlerts = () => {
+  db.query('SELECT * FROM expiry_alerts', (error, results) => {
+    if (error) {
+      console.error('Error fetching expiry alerts:', error);
+    } else {
+      results.forEach((alert) => {
+        const daysLeft = Math.ceil((new Date(alert.expiry_date) - new Date()) / (1000 * 60 * 60 * 24));
+        if (daysLeft > 0 && daysLeft <= 10) {
+          db.query('SELECT email FROM register WHERE name = ?', [alert.username], (error, results) => {
+            if (error) {
+              console.error('Error fetching email:', error);
+            } else {
+              const email = results[0].email;
+              sendReminderEmail(email, alert.username, alert.item_name, daysLeft);
+              db.query('UPDATE expiry_alerts SET days_left = ? WHERE id = ?', [daysLeft, alert.id]);
+            }
+          });
+        } else if (daysLeft <= 0) {
+          db.query('DELETE FROM expiry_alerts WHERE id = ?', [alert.id]);
+        }
+      });
+    }
+  });
+};
+
+// Schedule job to check expiry alerts every day at midnight
+const scheduleJob = () => {
+  schedule.scheduleJob('0 0 * * *', () => {
+    checkExpiryAlerts();
+  });
+};
+
+// Initialize scheduling when the server starts
+scheduleJob();
+
+// API endpoint to add expiry alerts
 app.post('/expiry-alerts', (req, res) => {
-  const { expiry_date } = req.body;
+  const { expiry_date, item_name } = req.body;
   const username = req.body.username;
 
-  if (!username || !expiry_date) {
-    return res.status(400).json({ error: "Username and expiry date are required" });
+  if (!username || !expiry_date || !item_name) {
+    return res.status(400).json({ error: "Username, expiry date, and item name are required" });
   }
 
   db.query('SELECT email FROM register WHERE name = ?', [username], (error, results) => {
@@ -393,8 +447,8 @@ app.post('/expiry-alerts', (req, res) => {
     const daysLeft = Math.ceil((new Date(expiry_date) - new Date()) / (1000 * 60 * 60 * 24));
 
     db.query(
-      'INSERT INTO expiry_alerts (username, expiry_date, days_left) VALUES (?, ?, ?)',
-      [username, expiry_date, daysLeft],
+      'INSERT INTO expiry_alerts (username, expiry_date, item_name, days_left) VALUES (?, ?, ?, ?)',
+      [username, expiry_date, item_name, daysLeft],
       (error, result) => {
         if (error) {
           console.error("Error inserting expiry alert:", error);
@@ -407,11 +461,10 @@ app.post('/expiry-alerts', (req, res) => {
     );
   });
 });
-
 app.get('/expiry-alerts/:username', (req, res) => {
   const username = req.params.username;
 
-  db.query('SELECT * FROM expiry_alerts WHERE username = ?', [username], (error, results) => {
+  db.query('SELECT item_name, days_left FROM expiry_alerts WHERE username = ?', [username], (error, results) => {
     if (error) {
       console.error("Error fetching expiry alerts:", error);
       return res.status(500).json({ error: "Internal server error" });
@@ -420,49 +473,6 @@ app.get('/expiry-alerts/:username', (req, res) => {
     res.status(200).json({ success: true, alerts: results });
   });
 });
-
-const sendReminderEmail = (email, username, daysLeft) => {
-  const mailOptions = {
-    from: 'lekharavalipaladugu1234@gmail.com',
-    to: email,
-    subject: 'Expiry Alert Reminder',
-    text: `Hello ${username},\n\nYour item is set to expire in ${daysLeft} days.\n\nBest regards,\nExpiry Alerts Team`,
-  };
-
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      return console.error('Error sending reminder email:', error);
-    }
-    console.log('Reminder email sent:', info.response);
-  });
-};
-
-const checkExpiryAlerts = () => {
-  db.query('SELECT * FROM expiry_alerts', (error, results) => {
-    if (error) {
-      return console.error('Error fetching expiry alerts:', error);
-    }
-
-    results.forEach((alert) => {
-      const daysLeft = Math.ceil((new Date(alert.expiry_date) - new Date()) / (1000 * 60 * 60 * 24));
-      if (daysLeft > 0 && daysLeft <= 10) {
-        db.query('SELECT email FROM register WHERE name = ?', [alert.username], (error, results) => {
-          if (error) {
-            return console.error('Error fetching email:', error);
-          }
-
-          const email = results[0].email;
-          sendReminderEmail(email, alert.username, daysLeft);
-          db.query('UPDATE expiry_alerts SET days_left = ? WHERE id = ?', [daysLeft, alert.id]);
-        });
-      } else if (daysLeft <= 0) {
-        db.query('DELETE FROM expiry_alerts WHERE id = ?', [alert.id]);
-      }
-    });
-  });
-};
-
-schedule.scheduleJob('0 0 * * *', checkExpiryAlerts);
 // Start the server
 const PORT = 3004;
 app.listen(PORT, () => {

@@ -1,63 +1,53 @@
+body, html {
+  height: 100%;
+  margin: 0;
+  background: url('./notification1.jpeg') no-repeat center center fixed;
+  background-size: cover; /* Ensure the background image covers the full page */
+}
+
 .login-container {
- 
-  max-width: 400px;
-  margin: 50px auto;
-  padding: 20px;
-  background-color: #f0f0f0;
-  border-radius: 8px;
-  text-align: center;
-}
-
-h1 {
-  color: #333;
-  margin-bottom: 20px;
-}
-
-.login-form {
- 
+  height: 100vh;
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  
+ /* Add a semi-transparent overlay */
 }
 
-.form-group {
-  width: 100%;
-  margin-bottom: 15px;
-  text-align: left;
+.card {
+  border: none; /* Remove border to ensure consistent background color */
+  border-radius: 8px;
+  background-color: #161F6D; /* Ensure the card has a solid background */
 }
 
-label {
-  display: block;
-  margin-bottom: 5px;
-  color: #555;
+.btn-primary {
+  background-color: #00ABE1;
+  border: none; /* Remove border for buttons */
 }
 
-input[type="email"],
-input[type="password"] {
-  width: 100%;
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
+.btn-primary:hover {
+  background-color: #007bb5;
 }
 
-.submit-btn {
-  width: 100%;
-  padding: 10px;
-  font-size: 16px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+.text-center {
+  color: #00ABE1;
 }
 
-.submit-btn:hover {
-  background-color: #0056b3;
+.form-control {
+  background-color: #161F6D; /* Form input background color */
+  color: white; /* Form input text color */
+  border: 1px solid #00ABE1; /* Border color for form inputs */
 }
+
+.form-control:focus {
+  background-color: #161F6D; /* Maintain background color on focus */
+  color: white;
+  border-color: #00ABE1; /* Maintain border color on focus */
+  box-shadow: none; /* Remove default focus shadow */
+}
+
 .error-message {
-  color: red;
-  font-size: 14px;
-  margin-top: 5px;
+  color: #FF0000; /* Red color for error messages */
+ 
+  
 }

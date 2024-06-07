@@ -48,7 +48,8 @@ import RemainderComponent from './RemainderComponent';
 import RequestStatus from './RequestStatus';
 import Request from './requestpage';
 import HomePage from './homepage';
-import Dashboard from './dashborad'
+
+
 import CreateAccount from './createaccount'
 import Login from './login'
 import VerifyOTP from './verifyotp.js';
@@ -61,7 +62,7 @@ const App = () => {
         <Routes>
         <Route path="/" element={<HomePage />} />
         
-          <Route path="/dashboard" element={<Dashboard />} />
+          
           <Route path="/create-account" element={<CreateAccount />} />
           <Route path="/verify-otp" element={<VerifyOTP />} />
        

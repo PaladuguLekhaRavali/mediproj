@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const RemindersHistory = () => {
   const [reminders, setReminders] = useState([]);
@@ -33,19 +34,35 @@ const RemindersHistory = () => {
   }, []);
 
   return (
-    <div>
-      <h2>Reminders History</h2>
-      {error && <p>{error}</p>}
-      <ul>
-        {reminders.map((reminder) => (
-          <li key={reminder.id}>
-            <p><strong>Receiver:</strong> {reminder.receiver_name}</p>
-            <p><strong>Message:</strong> {reminder.message}</p>
-            <p><strong>Time:</strong> {new Date(reminder.reminder_time).toLocaleString()}</p>
-            <p><strong>Status:</strong> {reminder.status === 'pending' ? 'Pending' : 'Sent'}</p>
-          </li>
-        ))}
-      </ul>
+    <div className="container-fluid" style={{ backgroundColor: 'rgba(22, 31, 109, 0.8)', minHeight: '100vh', paddingTop: '20px' }}>
+      <div className="row justify-content-center">
+        <div className="col-md-6">
+          <h2 style={{ color: '#00ABE1' }}>Reminders History</h2>
+          <div style={{ backgroundColor: '#161F6D', padding: '20px', borderRadius: '10px', marginBottom: '20px' }}>
+            {error && <p style={{ color: 'ed', marginTop: '10px' }}>{error}</p>}
+            <table className="table table-striped" style={{ color: '#161F6D' }}>
+              <thead>
+                <tr style={{ backgroundColor: '#00ABE1', color: '#FFFFFF' }}>
+                  <th>Receiver</th>
+                  <th>Message</th>
+                  <th>Time</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {reminders.map((reminder) => (
+                  <tr key={reminder.id}>
+                    <td style={{ color: '#FFFFFF' }}>{reminder.receiver_name}</td>
+                    <td style={{ color: '#FFFFFF' }}>{reminder.message}</td>
+                    <td style={{ color: '#FFFFFF' }}>{new Date(reminder.reminder_time).toLocaleString()}</td>
+                    <td style={{ color: '#FFFFFF' }}> {reminder.status === 'pending'? 'Pending' : 'Sent'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

@@ -1,5 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const CreateReminderComponent = () => {
   const [friends, setFriends] = useState([]);
@@ -44,40 +46,52 @@ const CreateReminderComponent = () => {
   };
 
   return (
-    <div>
-      <h2>Create Reminder</h2>
-      {alertMessage && <p>{alertMessage}</p>}
-      <label htmlFor="friends">Select Friend:</label>
-      <select
-        id="friends"
-        value={selectedFriend}
-        onChange={(e) => setSelectedFriend(e.target.value)}
-      >
-        <option value="">Select a friend</option>
-        {friends.map((friend) => (
-          <option key={friend.name} value={friend.name}>
-            {friend.name}
-          </option>
-        ))}
-      </select>
-      <br />
-      <label htmlFor="message">Message:</label>
-      <input
-        type="text"
-        id="message"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-      />
-      <br />
-      <label htmlFor="dateTime">Date and Time:</label>
-      <input
-        type="datetime-local"
-        id="dateTime"
-        value={dateTime}
-        onChange={(e) => setDateTime(e.target.value)}
-      />
-      <br />
-      <button onClick={handleCreateReminder}>Create Reminder</button>
+    <div className="container-fluid" style={{ backgroundColor: 'rgba(22, 31, 109, 0.8)', minHeight: '100vh', paddingTop: '20px' }}>
+      <div className="row justify-content-center">
+        <div className="col-md-6">
+          <h2 style={{ color: '#00ABE1' }}>Create Reminder</h2>
+          <div style={{ backgroundColor: '#161F6D', padding: '20px', borderRadius: '10px', marginBottom: '20px' }}>
+            {alertMessage && <p style={{ color: 'red', marginTop: '10px' }}>{alertMessage}</p>}
+            <div className="form-group">
+              <label htmlFor="friends" style={{ color: '#FFFFFF' }}>Select Friend:</label>
+              <select
+                id="friends"
+                value={selectedFriend}
+                onChange={(e) => setSelectedFriend(e.target.value)}
+                style={{ backgroundColor: '#E8EAFF', color: '#161F6D' }}
+              >
+                <option value="">Select a friend</option>
+                {friends.map((friend) => (
+                  <option key={friend.name} value={friend.name}>
+                    {friend.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group">
+              <label htmlFor="message" style={{ color: '#FFFFFF' }}>Message:</label>
+              <input
+                type="text"
+                id="message"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                style={{ backgroundColor: '#E8EAFF', color: '#161F6D' }}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="dateTime" style={{ color: '#FFFFFF' }}>Date and Time:</label>
+              <input
+                type="datetime-local"
+                id="dateTime"
+                value={dateTime}
+                onChange={(e) => setDateTime(e.target.value)}
+                style={{ backgroundColor: '#E8EAFF', color: '#161F6D' }}
+              />
+            </div>
+            <button onClick={handleCreateReminder} className="btn btn-primary" style={{ backgroundColor: '#00ABE1' }}>Create Reminder</button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

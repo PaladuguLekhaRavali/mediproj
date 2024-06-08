@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const RequestComponent = () => {
   const [requests, setRequests] = useState([]);
@@ -49,17 +50,25 @@ const RequestComponent = () => {
   };
 
   return (
-    <div>
-      <h2>Friend Requests</h2>
-      {requests.length === 0 && <p>No requests found.</p>}
-      {requests.map((request, index) => (
-        <div key={index}>
-          <p>Request from: {request.sender_name}</p>
-          <button onClick={() => handleAccept(request.sender_name)}>Accept</button>
-          <button onClick={() => handleReject(request.sender_name)}>Reject</button>
+    <div className="container-fluid" style={{ backgroundColor: 'rgba(22, 31, 109, 0.8)', minHeight: '100vh', paddingTop: '20px' }}>
+      <div className="row justify-content-center">
+        <div className="col-md-6">
+          <h2 style={{ color: '#00ABE1' }}>Friend Requests</h2>
+          <div style={{ backgroundColor: '#161F6D', padding: '20px', borderRadius: '10px', marginBottom: '20px' }}>
+            {requests.length === 0 && <p style={{ color: '#FFFFFF' }}>No requests found.</p>}
+            {requests.map((request, index) => (
+              <div key={index} style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)', padding: '10px', borderRadius: '10px', marginBottom: '10px' }}>
+                <p style={{ color: '#FFFFFF', marginBottom: '5px' }}>Request from: {request.sender_name}</p>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <button onClick={() => handleAccept(request.sender_name)} className="btn btn-success" style={{ marginRight: '10px' }}>Accept</button>
+                  <button onClick={() => handleReject(request.sender_name)} className="btn btn-danger">Reject</button>
+                </div>
+              </div>
+            ))}
+            {alertMessage && <p style={{ color: 'red', marginTop: '10px' }}>{alertMessage}</p>}
+          </div>
         </div>
-      ))}
-      {alertMessage && <p>{alertMessage}</p>}
+      </div>
     </div>
   );
 };

@@ -1,11 +1,10 @@
-
 import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.min.js';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js'; // Ensure you use the bundle that includes Popper.js
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './remainder.css';
 
-const Navbar = () => {
+const NavigationBar = () => {
   const navigate = useNavigate();
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -23,7 +22,7 @@ const Navbar = () => {
     // Auto-rotate features every 5 seconds
     const intervalId = setInterval(() => {
       setCurrentFeatureIndex((prevIndex) => (prevIndex + 1) % features.length);
-    }, 1000);
+    }, 3000);
 
     return () => clearInterval(intervalId);
   }, []);
@@ -43,21 +42,21 @@ const Navbar = () => {
   };
 
   const features = [
-    { title: 'Remainder History', text: 'It contains the history about the remainders you created like message,receiver name,status' },
-    { title: 'Requests', text: 'It show the requests from the friends we can accept or reject the request' },
-    { title: 'Create Remainders', text: 'We can create remianders if we are friends with scheduled time and message.' },
+    { title: 'Remainder History', text: 'It contains the history about the remainders you created like message, receiver name, status' },
+    { title: 'Requests', text: 'It shows the requests from the friends; we can accept or reject the request' },
+    { title: 'Create Remainders', text: 'We can create reminders if we are friends with scheduled time and message.' },
     { title: 'Sent Requests', text: 'We can send Friend Requests to the friends.' },
-    { title: 'Expiry Remainder', text: 'We can set expiry remainders too ourself with item name.' }
+    { title: 'Expiry Reminder', text: 'We can set expiry reminders for ourselves with item name.' }
   ];
 
   return (
     <div>
-      <nav className="navbar navbar-expand-lg navbar-light bg-image bg-fixed" style={{ backgroundColor: '#161F6D' }} >
-        <div className="container-fluid ">
+      <nav className="navbar navbar-expand-lg navbar-light bg-image bg-fixed" style={{ backgroundColor: '#161F6D' }}>
+        <div className="container-fluid">
           <Link className="navbar-brand" to="/" style={{ color: '#00ABE1', fontSize: '30px' }}>MediFood Alerts</Link>
           <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span className="navbar-toggler-icon" ></span>
+            <span className="navbar-toggler-icon"></span>
           </button>
           <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
             <ul className="navbar-nav">
@@ -66,9 +65,9 @@ const Navbar = () => {
                   color: '#00ABE1',
                   fontSize: '20px',
                   textDecoration: 'none',
-                  transition: 'color 0.3s ease', // Smooth transition
+                  transition: 'color 0.3s ease',
                 }}
-                onMouseEnter={(e) => e.target.style.color = 'white'} // Change color on hover
+                onMouseEnter={(e) => e.target.style.color = 'white'}
                 onMouseLeave={(e) => e.target.style.color = '#00ABE1'}>Remainders History</Link>
               </li>
               <li className="nav-item">
@@ -76,9 +75,9 @@ const Navbar = () => {
                   color: '#00ABE1',
                   fontSize: '20px',
                   textDecoration: 'none',
-                  transition: 'color 0.3s ease', // Smooth transition
+                  transition: 'color 0.3s ease',
                 }}
-                onMouseEnter={(e) => e.target.style.color = 'white'} // Change color on hover
+                onMouseEnter={(e) => e.target.style.color = 'white'}
                 onMouseLeave={(e) => e.target.style.color = '#00ABE1'}>Requests</Link>
               </li>
               <li className="nav-item">
@@ -86,9 +85,9 @@ const Navbar = () => {
                   color: '#00ABE1',
                   fontSize: '20px',
                   textDecoration: 'none',
-                  transition: 'color 0.3s ease', // Smooth transition
+                  transition: 'color 0.3s ease',
                 }}
-                onMouseEnter={(e) => e.target.style.color = 'white'} // Change color on hover
+                onMouseEnter={(e) => e.target.style.color = 'white'}
                 onMouseLeave={(e) => e.target.style.color = '#00ABE1'}>Create Remainder</Link>
               </li>
               <li className="nav-item">
@@ -96,9 +95,9 @@ const Navbar = () => {
                   color: '#00ABE1',
                   fontSize: '20px',
                   textDecoration: 'none',
-                  transition: 'color 0.3s ease', // Smooth transition
+                  transition: 'color 0.3s ease',
                 }}
-                onMouseEnter={(e) => e.target.style.color = 'white'} // Change color on hover
+                onMouseEnter={(e) => e.target.style.color = 'white'}
                 onMouseLeave={(e) => e.target.style.color = '#00ABE1'}>Send Requests</Link>
               </li>
               <li className="nav-item bold-text">
@@ -106,18 +105,18 @@ const Navbar = () => {
                   color: '#00ABE1',
                   fontSize: '20px',
                   textDecoration: 'none',
-                  transition: 'color 0.3s ease', // Smooth transition
+                  transition: 'color 0.3s ease',
                 }}
-                onMouseEnter={(e) => e.target.style.color = 'white'} // Change color on hover
+                onMouseEnter={(e) => e.target.style.color = 'white'}
                 onMouseLeave={(e) => e.target.style.color = '#00ABE1'}>Expiry Remainder</Link>
               </li>
-              {isAuthenticated? (
+              {isAuthenticated ? (
                 <li className="nav-item dropdown">
                   <button className="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
                     aria-expanded={showDropdown} onClick={toggleDropdown} style={{ backgroundColor: '#00ABE1' }}>
                     {username}
                   </button>
-                  <ul className={`dropdown-menu ${showDropdown? 'how' : ''}`} aria-labelledby="dropdownMenuButton">
+                  <ul className={`dropdown-menu ${showDropdown ? 'show' : ''}`} aria-labelledby="dropdownMenuButton">
                     <li><button className="dropdown-item" onClick={handleSignOut} style={{ color: '#00ABE1', fontSize: '20px' }}>Sign Out</button></li>
                   </ul>
                 </li>
@@ -151,5 +150,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
-
+export default NavigationBar;
